@@ -1,0 +1,73 @@
+getwd
+getwd()
+library(omicbot)
+quickstart()
+settings()
+hi
+install.packages('writexl')
+ls()
+library(omicbot)
+quickstart()
+quickchat()
+print()
+quickchat()
+>
+makeActiveBinding(#
+  "hej",#
+  function() quickchat(),#
+  .GlobalEnv#
+)
+hej
+makeActiveBinding(#
+  ">",#
+  function() quickchat(),#
+  .GlobalEnv#
+)
+>
+makeActiveBinding(#
+  ">>",#
+  function() quickchat(),#
+  .GlobalEnv#
+)
+>>
+hej
+makeActiveBinding(#
+  "hey",#
+  function() quickchat(),#
+  .GlobalEnv#
+)
+hey
+makeActiveBinding(#
+  "kimi",#
+  function() {cat("\nyes?"), quickchat()},#
+  .GlobalEnv#
+)
+makeActiveBinding(#
+  "kimi",#
+  function() {cat("\nyes?") quickchat()},#
+  .GlobalEnv#
+)
+hey
+library(omicbot)
+quickstart()
+hi
+library(omicbot)
+quickstart()
+print()
+hi
+what variable are there in workspace
+hi
+what path are we in?
+hi
+settings()
+hi
+set working directory to ~/Documents/omicbot
+hi
+getwd()
+setwd()
+setwd("/Users/jianwu/Documents/omicbot")
+hi
+ls()
+hi
+hi
+settings()

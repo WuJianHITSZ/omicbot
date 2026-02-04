@@ -1,0 +1,4 @@
+library(omicbot)
+quickstart()
+
+

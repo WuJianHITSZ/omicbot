@@ -1,0 +1,149 @@
+---
+title: "codex_client"
+output: html_document
+---
+
+This is a complex task because it requires R to act as a web server momentarily to capture the OAuth redirect. We will use the `httr2` package (which has excellent support for modern OAuth2/PKCE) and `httpuv` to handle the local callback.
+
+### Prerequisites
+You will need to install these packages if you haven't already:
+```R
+install.packages(c("httr2", "httpuv", "jsonlite", "openssl"))
+```
+
+### The R Script
+This script implements the **OAuth 2.0 with PKCE** flow using the Codex Client ID. 
+
+**Note:** This script mimics the "Official Codex" flow. OpenAI may occasionally change their internal routing, but this is the architecture used by tools like OpenCode.
+
+```R
+library(httr2)
+library(httpuv)
+library(jsonlite)
+library(openssl)
+
+# 1. Configuration Constants
+CLIENT_ID <- "app_EMoamEEZ73f0CkXaXp7hrann" # The Codex Public Client ID
+AUTH_URL  <- "https://auth.openai.com/oauth/authorize"
+TOKEN_URL <- "https://auth.openai.com/oauth/token"
+REDIRECT_URI <- "http://localhost:1455/auth/callback"
+
+# 2. PKCE Helper Functions
+# Creates a high-entropy random string
+generate_verifier <- function() {
+  chars <- c(letters, LETTERS, 0:9, "-", ".", "_", "~")
+  paste(sample(chars, 64, replace = TRUE), collapse = "")
+}
+
+# Hashes the verifier for the 'challenge'
+generate_challenge <- function(verifier) {
+  sha256_hash <- sha256(charToRaw(verifier))
+  # Base64 URL encoding (no padding, replace + and /)
+  challenge <- base64_encode(sha256_hash)
+  challenge <- gsub("\\+", "-", challenge)
+  challenge <- gsub("/", "_", challenge)
+  challenge <- gsub("=", "", challenge)
+  return(challenge)
+}
+
+# 3. The Login Function
+login_to_chatgpt <- function() {
+  verifier <- generate_verifier()
+  challenge <- generate_challenge(verifier)
+  
+  # Build the Authorization URL
+  auth_request_url <- url_parse(AUTH_URL)
+  auth_request_url$query <- list(
+    client_id = CLIENT_ID,
+    response_type = "code",
+    scope = "openid profile email offline_access",
+    redirect_uri = REDIRECT_URI,
+    code_challenge = challenge,
+    code_challenge_method = "S256",
+    audience = "https://api.openai.com/v1"
+  )
+  final_url <- url_build(auth_request_url)
+  
+  cat("Opening browser for login...\n")
+  browseURL(final_url)
+  
+  # 4. Local Server to catch the Auth Code
+  auth_code <- NULL
+  server <- startServer("127.0.0.1", 1455, list(
+    call = function(req) {
+      qs <- parseQueryString(req$QUERY_STRING)
+      auth_code <<- qs$code
+      
+      res <- list(
+        status = 200L,
+        headers = list('Content-Type' = 'text/html'),
+        body = "<h1>Login Successful!</h1><p>You can close this window and return to R.</p>"
+      )
+      return(res)
+    }
+  ))
+  
+  # Wait for the code (loop until auth_code is populated)
+  while(is.null(auth_code)) {
+    service()
+    Sys.sleep(0.1)
+  }
+  stopServer(server)
+  cat("Authorization code received. Exchanging for token...\n")
+  
+  # 5. Exchange Code for Access Token
+  token_response <- request(TOKEN_URL) %>%
+    req_body_form(
+      client_id = CLIENT_ID,
+      grant_type = "authorization_code",
+      code = auth_code,
+      code_verifier = verifier,
+      redirect_uri = REDIRECT_URI
+    ) %>%
+    req_perform() %>%
+    resp_body_json()
+  
+  return(token_response)
+}
+
+# 6. The Codex "Responses-API" Request Function
+send_codex_query <- function(token, prompt) {
+  # Note: The endpoint and shape mimic the Codex internal API
+  api_url <- "https://api.openai.com/v1/responses"
+  
+  body <- list(
+    model = "gpt-4o", # Or the codex-specific model allowed by your sub
+    instructions = "You are a helpful coding assistant.",
+    input = list(
+      list(role = "user", content = prompt)
+    ),
+    store = FALSE # Privacy flag often used by IDE extensions
+  )
+  
+  resp <- request(api_url) %>%
+    req_auth_bearer_token(token$access_token) %>%
+    req_body_json(body) %>%
+    req_perform()
+  
+  return(resp_body_json(resp))
+}
+
+# --- EXECUTION ---
+# Step 1: Login
+my_tokens <- login_to_chatgpt()
+cat("Access Token obtained successfully!\n")
+
+# Step 2: Test a query
+# result <- send_codex_query(my_tokens, "Write an R function to calculate prime numbers.")
+# print(result)
+```
+
+### How this works:
+1.  **PKCE Generation:** It creates a `code_verifier` and a `code_challenge`. This is required for public clients (like an R script or an IDE extension) because they cannot safely store a client secret.
+2.  **Local Server:** It uses `httpuv::startServer` to listen on port `1455`. This is exactly what OpenCode/Roo-Code does.
+3.  **Browser Redirect:** It opens your default browser to OpenAI's login page. Once you log in, OpenAI redirects to your R script.
+4.  **Token Exchange:** Once R receives the `auth_code`, it immediately makes a background POST request to exchange that code (and the verifier) for a real **JWT Access Token**.
+5.  **Shaped Request:** The `send_codex_query` function shows how you would then use that token to hit the `/v1/responses` endpoint instead of the standard `/v1/chat/completions`.
+
+### Important Security Note:
+The `access_token` you receive is a "Bearer" token. It is equivalent to your password for the duration of its life (usually 1 hour). Do not share the console output if it prints the full token. The `refresh_token` returned can be used to generate new access tokens without logging in again.

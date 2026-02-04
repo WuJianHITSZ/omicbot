@@ -1,0 +1,5 @@
+Name: omicbot
+Description: Take the current RStudio Console input (or selection) and run agent$chat("...") with it.
+Binding: quickchat
+Interactive: true
+
