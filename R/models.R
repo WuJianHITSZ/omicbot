@@ -58,13 +58,13 @@
 
 .omicbot_model_options <- function(provider) {
   if (provider == "openai") {
-    c("gpt-5.2", "gpt-5.2-codex", "gpt-5-mini")
+    c("gpt-4o", "gpt-4.1", "gpt-4.1-mini")
   } else if (provider == "google") {
     c("gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite")
   } else if (provider == "deepseek") {
     c("deepseek-chat", "deepseek-coder", "deepseek-reasoner")
   } else if (provider == "alibaba") {
-    c("qwen-plus", "qwen-turbo", "qwen-max")
+    c("qwen3-max", "qwen3-235b-a22b", "qwen3-coder-plus")
   } else if (provider == "ollama") {
     .omicbot_ollama_models()
   } else {

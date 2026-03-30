@@ -10,20 +10,22 @@
     return(list(approved = TRUE, message = "Guardrail bypassed by option."))
   }
   if (!interactive()) {
-    return(list(approved = FALSE, message = "Rejected: non-interactive session."))
+    cli::cli_abort("Guardrail rejected: non-interactive session.")
   }
 
   cli::cli_h2("Approval Request")
   cli::cli_text("{.strong Action}: {action}")
   if (nzchar(target)) cli::cli_text("{.strong Target}: {target}")
   if (nzchar(details)) cli::cli_text("{.strong Details}: {details}")
+  # cli::cli_text("{.strong Control}: Enter = Approve, Esc = Reject")
 
-  choice <- utils::menu(
-    choices = c("Approve", "Reject"),
-    title = "Allow this operation? (0 = Reject)"
-  )
-  if (choice != 1L) {
-    return(list(approved = FALSE, message = "Rejected by user."))
+  key <- readline("Approve [Enter] / Reject [Esc]: ")
+  esc_char <- intToUtf8(27)
+  if (!identical(key, "")) {
+    if (identical(key, esc_char) || grepl(esc_char, key, fixed = TRUE)) {
+      cli::cli_abort("Guardrail rejected by user.")
+    }
+    cli::cli_abort("Guardrail rejected by user.")
   }
   list(approved = TRUE, message = "Approved by user.")
 }
@@ -104,61 +106,6 @@
   paste(out, collapse = "\n")
 }
 
-.omicbot_tool_apply_patch <- function(patch) {
-  gate <- .omicbot_guardrail_confirm(
-    action = "apply_patch",
-    target = "local files"
-  )
-  if (!gate$approved) return(gate$message)
-
-  patch_bin <- Sys.which("patch")
-  if (!nzchar(patch_bin)) {
-    stop("The 'patch' command is not available on this system.")
-  }
-  tmp <- tempfile(fileext = ".patch")
-  writeLines(patch, tmp)
-  out <- tryCatch(
-    system2(patch_bin, c("-p0", "-i", tmp), stdout = TRUE, stderr = TRUE),
-    error = function(e) e
-  )
-  if (inherits(out, "error")) {
-    return(sprintf("Error: %s", conditionMessage(out)))
-  }
-  paste(out, collapse = "\n")
-}
-
-.omicbot_tool_patch_preview <- function(patch, max_lines = 80) {
-  if (!nzchar(trimws(patch))) {
-    return("No patch content provided.")
-  }
-
-  lines <- strsplit(patch, "\n", fixed = TRUE)[[1]]
-  file_headers <- grep("^\\*\\*\\* (Update|Add|Delete) File: ", lines, value = TRUE)
-  file_names <- sub("^\\*\\*\\* (Update|Add|Delete) File: ", "", file_headers)
-
-  adds <- sum(grepl("^\\+", lines) & !grepl("^\\+\\+\\+", lines))
-  dels <- sum(grepl("^-", lines) & !grepl("^---", lines))
-
-  out <- character(0)
-  out <- c(out, sprintf("Patch summary: %d file(s), +%d -%d", length(file_names), adds, dels))
-  if (length(file_names)) {
-    out <- c(out, "Files:")
-    out <- c(out, paste0("- ", file_names))
-  }
-  out <- c(out, "", "Hunks (truncated):")
-
-  keep <- grepl("^\\*\\*\\* (Update|Add|Delete) File: |^@@|^[ +-]", lines)
-  body <- lines[keep]
-  body <- body[body != "*** Begin Patch" & body != "*** End Patch"]
-
-  max_lines <- suppressWarnings(as.integer(max_lines))
-  if (is.na(max_lines) || max_lines <= 0) max_lines <- 80L
-  if (length(body) > max_lines) {
-    body <- c(body[seq_len(max_lines)], "... (truncated)")
-  }
-
-  paste(c(out, body), collapse = "\n")
-}
 
 .omicbot_tool_run_r <- function(code) {
   gate <- .omicbot_guardrail_confirm(
@@ -251,23 +198,6 @@ omicbot_tools <- function() {
       description = "Run a shell command and return combined output.",
       arguments = list(
         command = ellmer::type_string("Shell command to run.")
-      )
-    ),
-    ellmer::tool(
-      .omicbot_tool_apply_patch,
-      name = "apply_patch",
-      description = "Apply a unified diff patch using the system 'patch' command.",
-      arguments = list(
-        patch = ellmer::type_string("Unified diff patch text to apply.")
-      )
-    ),
-    ellmer::tool(
-      .omicbot_tool_patch_preview,
-      name = "patch_preview",
-      description = "Preview and summarize a patch with file-level and hunk-level changes without printing full file contents.",
-      arguments = list(
-        patch = ellmer::type_string("Unified diff patch text to preview."),
-        max_lines = ellmer::type_string("Maximum number of hunk lines to show.")
       )
     ),
     ellmer::tool(

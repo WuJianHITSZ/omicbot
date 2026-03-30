@@ -51,6 +51,9 @@
       if (exists("omicbot_databot_tools", mode = "function")) {
         tools <- c(tools, omicbot_databot_tools())
       }
+      if (exists("omicbot_git_tools", mode = "function")) {
+        tools <- c(tools, omicbot_git_tools())
+      }
       .omicbot_attach_tools(agent, tools)
     },
     error = function(e) {
