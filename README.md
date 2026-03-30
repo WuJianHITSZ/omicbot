@@ -33,13 +33,26 @@ For bioinformaticians, that can mean help with workflows like:
 
 Current repository structure and documentation indicate support for:
 
-- **RStudio addin integration** for keyboard-shortcut-driven interaction
-- **Quick chat workflows** directly from the console
-- **Console error diagnosis** using context-aware prompting
-- **Multi-line prompt support** via clipboard-driven input
-- **Model/provider setup** for multiple backends
-- **Browser chat launching** and lightweight chat utilities
-- **Configuration management** for setup, reset, and updates
+- **Inline AI assistance without interrupting normal coding flow**  
+  Omicbot is designed to fit around ordinary R console work rather than forcing a separate “chat mode.” You can keep coding, inspecting objects, and running commands as usual, then invoke the assistant only when needed.
+
+- **Shortcut-first interaction inside RStudio**  
+  Instead of bouncing between the IDE and a browser tab, Omicbot is triggered from a convenient keyboard shortcut through the RStudio addin system, making AI interaction feel lightweight and immediate.
+
+- **Console-aware troubleshooting**  
+  Omicbot can help interpret and troubleshoot errors based on console context, which is especially useful during fast iterative analysis work.
+
+- **Git patch / diff-oriented tooling**  
+  The project structure suggests support for working with code changes in a patch-oriented way, which opens the door to more structured review and editing workflows inside an R-centered environment.
+
+- **Support for multiple API-based LLM backends**  
+  Omicbot is being built to work with multiple model providers, giving users flexibility in how they configure and access LLMs from RStudio.
+
+- **Multi-line prompt support**  
+  Longer prompts can be passed through clipboard-based flows, which is handy when working with copied code, stack traces, or analysis notes.
+
+- **Configuration and setup utilities**  
+  The package includes helper flows for configuration, setup, reset, and related environment management.
 
 ## Installation
 
@@ -108,6 +121,19 @@ Omicbot is especially relevant for:
 - omics data analysts
 - R users doing iterative exploratory analysis
 - researchers who want AI assistance closer to their normal IDE workflow
+
+## Coming soon
+
+Planned or desired future directions include:
+
+- **Agent skills**  
+  Reusable capability modules could make Omicbot more specialized, extensible, and task-aware for different analysis scenarios.
+
+- **Background sub-agents**  
+  A sub-agent model would make it possible to hand off longer-running tasks while the main R session remains focused on interactive work.
+
+- **Support for ChatGPT / Codex subscription-backed models**  
+  Broader model-access options could make Omicbot more convenient for users already subscribed to OpenAI-hosted products.
 
 ## Current status
 
