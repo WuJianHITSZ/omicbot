@@ -65,6 +65,8 @@ remotes::install_github("WuJianHITSZ/omicbot")
 
 Package metadata currently lists these imports:
 
+- `ellmer`
+- `getPass`
 - `rstudioapi`
 - `shiny`
 
