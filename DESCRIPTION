@@ -12,6 +12,8 @@ Description: Omicbot provides a lightweight R interface for interactive LLM use 
 License: MIT
 Encoding: UTF-8
 Imports:
+    ellmer,
+    getPass,
     rstudioapi,
     shiny
 Suggests:
