@@ -10,6 +10,12 @@ A lot of bioinformatics and data-analysis work in R is iterative: write a small 
 
 Instead of leaving RStudio to ask for help elsewhere, you can trigger Omicbot from inside the console and use it as a nearby assistant for coding, troubleshooting, and analysis support.
 
+## Demo video
+
+Watch a short usage demo on YouTube:
+
+- https://www.youtube.com/watch?v=3dMKuOKJKX8
+
 ## What it can help with
 
 Omicbot is useful for tasks such as:
