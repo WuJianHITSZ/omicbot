@@ -1,0 +1,30 @@
+// Place your key bindings in this file to override the defaults
+[
+{
+  "key": "alt+-",
+  "command": "type",
+  "args": { "text": " <- " },
+  "when": "editorTextFocus"
+},
+{
+  "key": "alt+-",
+  "command": "workbench.action.terminal.sendSequence",
+  "args": { "text": " <- " },
+  "when": "terminalFocus"
+},
+
+{
+  "key": "shift+enter",
+  "command": "workbench.action.terminal.sendSequence",
+  "args": { "text": "quickchat()\u000D" },
+  "when": "terminalFocus"
+},
+
+{
+  "key": "ctrl+enter",
+  "command": "workbench.action.terminal.sendSequence",
+  "args": { "text": "settings()\u000D" },
+  "when": "terminalFocus"
+}
+
+]

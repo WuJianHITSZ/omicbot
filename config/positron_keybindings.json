@@ -1,0 +1,18 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "ctrl+shift+enter",
+        "command": "r.sourceCurrentFile"
+    },
+{
+  "key": "shift+enter",
+  "command": "workbench.action.executeCode.console",
+  "when": "positronConsoleFocused",
+  "args": {
+    "langId": "r",
+    "code": "quickchat()",
+    "focus": false
+  }
+}
+
+]
