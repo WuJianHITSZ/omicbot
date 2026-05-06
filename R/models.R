@@ -1,5 +1,5 @@
 .omicbot_provider_options <- function() {
-  c("openai", "google", "deepseek", "alibaba", "ollama")
+  c("openai", "google", "deepseek", "alibaba", "xiaomi", "ollama")
 }
 
 .omicbot_config_paths <- function() {
@@ -65,6 +65,8 @@
     c("deepseek-chat", "deepseek-coder", "deepseek-reasoner")
   } else if (provider == "alibaba") {
     c("qwen3-max", "qwen3-235b-a22b", "qwen3-coder-plus")
+  } else if (provider == "xiaomi") {
+    c("mimo-v2.5-pro", "mimo-v2.5", "mimo-v2-pro")
   } else if (provider == "ollama") {
     .omicbot_ollama_models()
   } else {

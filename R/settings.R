@@ -41,10 +41,13 @@ settings <- function() {
     "help"
   )
   selection <- .omicbot_menu_choice(menu_options, "setting")
+  if (is.null(selection)) return(invisible(NULL))
 
   if (selection == provider_label) {
     provider <- .omicbot_menu_choice(.omicbot_provider_options(), "provider")
+    if (is.null(provider)) return(invisible(NULL))
     model <- .omicbot_menu_choice(.omicbot_model_options(provider), "model")
+    if (is.null(model)) return(invisible(NULL))
     .omicbot_write_config(
       config_path = config_path,
       config_dir = config_dir,
@@ -56,8 +59,10 @@ settings <- function() {
   } else if (selection == model_label) {
     if (is.null(provider) || !nzchar(provider)) {
       provider <- .omicbot_menu_choice(.omicbot_provider_options(), "provider")
+      if (is.null(provider)) return(invisible(NULL))
     }
     model <- .omicbot_menu_choice(.omicbot_model_options(provider), "model")
+    if (is.null(model)) return(invisible(NULL))
     .omicbot_write_config(
       config_path = config_path,
       config_dir = config_dir,
@@ -68,6 +73,7 @@ settings <- function() {
     )
   } else if (selection == streaming_label) {
     streaming_choice <- .omicbot_menu_choice(c("enable", "disable"), "streaming")
+    if (is.null(streaming_choice)) return(invisible(NULL))
     streaming <- if (streaming_choice == "enable") "enabled" else "disabled"
     .omicbot_write_config(
       config_path = config_path,
@@ -79,6 +85,7 @@ settings <- function() {
     )
   } else if (selection == wakeword_label) {
     wakeword_choice <- .omicbot_menu_choice(c("enable", "disable"), "wakeword")
+    if (is.null(wakeword_choice)) return(invisible(NULL))
     wakeword <- if (wakeword_choice == "enable") "enabled" else "disabled"
     .omicbot_write_config(
       config_path = config_path,
@@ -110,6 +117,9 @@ settings <- function() {
     choices = options,
     title = sprintf("Choose %s, press 0 to cancel", label)
   )
+  if (idx == 0L) {
+    return(invisible(NULL))
+  }
   if (idx < 1 || idx > length(options)) {
     cli::cli_abort("No {label} selected.")
   }
@@ -117,7 +127,7 @@ settings <- function() {
 }
 
 .omicbot_print_help <- function() {
-  readme_path <- file.path(getwd(), "README.md")
+  readme_path <- file.path(getwd(), "help.md")
   if (!file.exists(readme_path)) {
     cli::cli_alert_warning("README.md not found.")
     return(invisible(FALSE))

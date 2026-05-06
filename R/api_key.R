@@ -11,6 +11,8 @@
     "DEEPSEEK_API_KEY"
   } else if (provider == "alibaba") {
     "DASHSCOPE_API_KEY"
+  } else if (provider == "xiaomi") {
+    "MIMO_API_KEY"
   } else if (provider == "ollama") {
     NULL
   } else {
@@ -83,12 +85,15 @@
 }
 
 .omicbot_openai_compatible_base_url <- function(provider) {
-  if (provider != "alibaba") {
-    return(NULL)
+  if (provider == "alibaba") {
+    base_url <- Sys.getenv("DASHSCOPE_BASE_URL", "")
+    if (nzchar(base_url)) return(base_url)
+    return("https://dashscope.aliyuncs.com/compatible-mode/v1")
   }
-  base_url <- Sys.getenv("DASHSCOPE_BASE_URL", "")
-  if (nzchar(base_url)) {
-    return(base_url)
+  if (provider == "xiaomi") {
+    base_url <- Sys.getenv("XIAOMI_MIMO_BASE_URL", "")
+    if (nzchar(base_url)) return(base_url)
+    return("https://token-plan-cn.xiaomimimo.com/v1")
   }
-  "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  NULL
 }
