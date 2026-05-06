@@ -1,14 +1,16 @@
 Package: omicbot
-Title: Data AI agent specilized in omics data analysis
+Title: Data AI Agent Specialized in Omics Data Analysis
 Version: 0.1.2
 Authors@R: person("Jian", "Wu", email = "wujian@gmail.com", role = c("aut", "cre"))
 Description: Omicbot provides a lightweight R interface for interactive LLM use in RStudio,
-  with guided provider/model setup, secure API‑key handling, and quick chat
+  with guided provider/model setup, secure API-key handling, and quick chat
   workflows. It initializes agents for multiple providers (OpenAI, Google,
-  DeepSeek, Alibaba Qwen via OpenAI‑compatible, and Ollama), supports fast
-  console chat and an addin-based “quickchat,” and offers a browser chat
-  launcher. Configuration is stored under the RStudio user config directory and
-  can be reset or updated interactively.
+  DeepSeek, Alibaba Qwen via OpenAI-compatible, Xiaomi MiMo, and Ollama),
+  supports fast console chat, an addin-based quickchat workflow, resumable saved
+  chat sessions, and a browser chat launcher. It also includes example omics
+  data and violin plot scripts for exploratory visualization workflows.
+  Configuration is stored under the RStudio user config directory and can be
+  reset or updated interactively.
 License: MIT
 Encoding: UTF-8
 Imports:
