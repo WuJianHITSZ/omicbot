@@ -15,7 +15,7 @@
   library(ellmer)
 
   # Load system prompt for the agent
-  prompt_path <- system.file("exdata", "prompt.md", package = "omicbot")
+  prompt_path <- system.file("extdata", "prompt.md", package = "omicbot")
   if (!nzchar(prompt_path)) {
     prompt_path <- file.path(getwd(), "inst", "exdata", "prompt.md")
   }
@@ -24,6 +24,10 @@
   }
   prompt <- readLines(prompt_path, warn = FALSE)
   prompt <- paste(prompt, collapse = "\n")
+  skill_index <- .omicbot_skill_prompt_index()
+  if (nzchar(skill_index)) {
+    prompt <- paste(prompt, skill_index, sep = "\n\n")
+  }
 
   # Resolve config paths for storing provider/model
   config_paths <- .omicbot_config_paths()
@@ -54,6 +58,9 @@
       if (exists("omicbot_git_tools", mode = "function")) {
         tools <- c(tools, omicbot_git_tools())
       }
+      if (exists("omicbot_skill_tools", mode = "function")) {
+        tools <- c(tools, omicbot_skill_tools())
+      }
       .omicbot_attach_tools(agent, tools)
     },
     error = function(e) {
@@ -65,6 +72,16 @@
   )
 
   options(omicbot.agent = agent)
+
+  # Load executable tools from bundled and user-installed folder skills.
+  if (exists("load_skills", mode = "function")) {
+    tryCatch(
+      load_skills(agent = agent),
+      error = function(e) {
+        cli::cli_warn("Failed to load skills ({conditionMessage(e)}).")
+      }
+    )
+  }
 
   if (identical(wakeword, "enabled")) {
     tryCatch(

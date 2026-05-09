@@ -58,7 +58,7 @@
 
 .omicbot_model_options <- function(provider) {
   if (provider == "openai") {
-    c("gpt-4o", "gpt-4.1", "gpt-4.1-mini")
+    c("gpt-5.2", "gpt-5.2-codex", "gpt-5-mini")
   } else if (provider == "google") {
     c("gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite")
   } else if (provider == "deepseek") {

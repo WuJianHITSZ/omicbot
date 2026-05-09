@@ -1,2 +1,0 @@
-options(vsc.rstudioapi = TRUE)
-

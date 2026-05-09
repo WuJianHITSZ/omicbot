@@ -4,9 +4,9 @@ Omicbot is an RStudio-native AI assistant package for interactive R programming,
 
 It is designed for people who already work inside RStudio and want AI help without constantly switching to a browser chat window. Omicbot brings lightweight assistant-style interaction into the IDE through an addin, quick prompting flow, and model/provider configuration tools.
 
-## Release 0.1.2
+## Release 0.2.0
 
-This release adds saved chat sessions, Xiaomi MiMo provider support, packaged gene-expression violin plot examples, and ready-to-use editor keybinding templates for VS Code and Positron.
+This release adds folder-based agent skills, a bundled GOTT/GOTTA skill, skill scaffolding and installation helpers, saved chat sessions, Xiaomi MiMo provider support, packaged gene-expression violin plot examples, and ready-to-use editor keybinding templates for VS Code and Positron.
 
 ## Why Omicbot exists
 
@@ -60,6 +60,15 @@ Current repository structure and documentation indicate support for:
 
 - **Saved and resumable chat sessions**  
   Use `save_chat()` to persist the active Omicbot conversation as an RDS file under the Omicbot config directory, then use `resume_chat()` to restore it later with the current package tools re-attached.
+
+- **Folder-based agent skills**  
+  Omicbot can discover reusable agent skills from simple folders. Each skill is a directory with a `SKILL.md` instruction file and, optionally, a `tools.R` file that exposes executable `ellmer` tools. User-installed skills live under the Omicbot config directory beside `.env`, so installing a skill is just copying or installing a folder.
+
+- **Skill authoring helpers**  
+  Use `create_skill()` to scaffold a new skill folder, `install_skill()` to copy it into the Omicbot config directory, `list_skills()` to inspect available skills, and `read_skill()` to view a skill's instructions.
+
+- **Bundled GOTT/GOTTA skill**  
+  The package includes a `gott` skill for spatial omics workflows using the GOTTA package. The skill documents the expected workflow and provides an executable helper tool when GOTTA and its plotting dependencies are installed.
 
 - **Multi-line prompt support**  
   Longer prompts can be passed through clipboard-based flows, which is handy when working with copied code, stack traces, or analysis notes.
@@ -162,6 +171,64 @@ resume_chat("your-chat-uuid")
 
 When a resumed session is saved again, Omicbot asks whether to update the existing saved chat or create a new UUID.
 
+## Agent skills
+
+Omicbot skills follow a folder layout inspired by Claude Code and Codex-style local skills:
+
+```text
+my-skill/
+  SKILL.md
+  tools.R      # optional
+```
+
+Create a new skill scaffold:
+
+```r
+create_skill(
+  name = "my-skill",
+  title = "My Skill",
+  description = "Use this skill for a specific workflow.",
+  tools = TRUE
+)
+```
+
+Install a skill by copying it into the Omicbot config directory:
+
+```r
+install_skill("my-skill")
+```
+
+List and inspect installed skills:
+
+```r
+list_skills()
+read_skill("my-skill")
+```
+
+By default, user skills are stored under:
+
+```text
+~/.config/rstudio/omicbot/skills/
+```
+
+Skill folders can be copied directly into that directory. User-installed skills override bundled skills with the same folder name.
+
+Executable skill tools are optional. If a skill includes `tools.R`, it should define:
+
+```r
+omicbot_skill_tools <- function(skill) {
+  list(
+    ellmer::tool(
+      function() "ok",
+      name = "my_skill_ok",
+      description = "Return ok from this skill tool."
+    )
+  )
+}
+```
+
+Omicbot automatically advertises installed skills in the agent system prompt and provides a `read_skill(name)` tool so the agent can load full skill instructions before applying a skill-specific workflow.
+
 ## Example gene violin plot
 
 The package includes a small example gene-expression dataset at `inst/extdata/gene_expression.csv` plus R scripts that render violin plots for Control and Treatment groups. For example:
@@ -185,9 +252,6 @@ Omicbot is especially relevant for:
 ## Coming soon
 
 Planned or desired future directions include:
-
-- **Agent skills**  
-  Reusable capability modules could make Omicbot more specialized, extensible, and task-aware for different analysis scenarios.
 
 - **Background sub-agents**  
   A sub-agent model would make it possible to hand off longer-running tasks while the main R session remains focused on interactive work.

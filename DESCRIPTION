@@ -1,6 +1,6 @@
 Package: omicbot
 Title: Data AI Agent Specialized in Omics Data Analysis
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: person("Jian", "Wu", email = "wujian@gmail.com", role = c("aut", "cre"))
 Description: Omicbot provides a lightweight R interface for interactive LLM use in RStudio,
   with guided provider/model setup, secure API-key handling, and quick chat
@@ -14,8 +14,10 @@ Description: Omicbot provides a lightweight R interface for interactive LLM use 
 License: MIT
 Encoding: UTF-8
 Imports:
+    cli,
     ellmer,
     getPass,
+    jsonlite,
     rstudioapi,
     shiny
 Suggests:

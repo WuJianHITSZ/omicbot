@@ -1,0 +1,13 @@
+// Place this key binding in the "actions" array of Windows Terminal settings.json
+// To open it: Windows Terminal -> Settings -> Open JSON file
+// Shortcut: press Ctrl+, in Windows Terminal, then click "Open JSON file"
+[
+    {
+        // Shift+Enter sends quickchat() to the active terminal pane and presses Enter
+        "command": {
+            "action": "sendInput",
+            "input": "quickchat()\r"
+        },
+        "keys": "shift+enter"
+    }
+]

@@ -1,0 +1,1 @@
+load a gene data in inst/extdata to workspace, and make a violin plot for the genes, displaying them in the RStudio panel Plots. You generate the R script logics including loading data, making plots, and you save it as violinplot_gene.R in subfolder vignettes (if it exists, simply run it) and open the R script in editor, and finally YOU RUN the R script automatically!

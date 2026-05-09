@@ -3,6 +3,10 @@
 .RData
 .Ruserdata
 .Rapp.history
+.Rprofile
 .DS_Store
 Thumbs.db
 .positai
+temp_data.rds
+inst/extdata/*.rds
+gott_demo.R

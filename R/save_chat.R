@@ -125,6 +125,9 @@ resume_chat <- function(uuid) {
       if (exists("omicbot_git_tools", mode = "function")) {
         tools <- c(tools, omicbot_git_tools())
       }
+      if (exists("omicbot_skill_tools", mode = "function")) {
+        tools <- c(tools, omicbot_skill_tools())
+      }
       .omicbot_attach_tools(agent, tools)
     },
     error = function(e) {
@@ -136,6 +139,15 @@ resume_chat <- function(uuid) {
   )
 
   options(omicbot.agent = agent)
+
+  if (exists("load_skills", mode = "function")) {
+    tryCatch(
+      load_skills(agent = agent),
+      error = function(e) {
+        cli::cli_warn("Failed to load skills ({conditionMessage(e)}).")
+      }
+    )
+  }
 
   # Load config and ensure the API key is in the environment.
   # After a session restart the .env file exists but has not been sourced yet,

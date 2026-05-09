@@ -1,4 +1,6 @@
 test_that("read/write/list file tools basic behavior", {
+  withr::local_options(omicbot.guardrail = FALSE)
+
   tmp_dir <- tempfile("omicbot-tools-")
   dir.create(tmp_dir, recursive = TRUE)
   file_path <- file.path(tmp_dir, "notes.txt")
