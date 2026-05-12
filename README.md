@@ -18,7 +18,7 @@ Instead of leaving RStudio to ask for help elsewhere, you can trigger Omicbot fr
 
 Watch a short usage demo on YouTube:
 
-- https://www.youtube.com/watch?v=3dMKuOKJKX8
+- https://www.youtube.com/watch?v=_4L2wHKZcRI
 
 ## What it can help with
 
